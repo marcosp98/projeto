@@ -31,19 +31,19 @@ class DatabasePipeline:
 
     def process_item(self, item, spider):
         # Verifique se o ID já existe
-        self.cursor.execute('SELECT id FROM produtos WHERE id = ?', (item['ID'],))
+        self.cursor.execute('SELECT id FROM produtos WHERE id = ?', (item['id'],))
         result = self.cursor.fetchone()
 
         if result:
                 # Se o ID já existir, não faça nada
-            raise DropItem(f"Produto com ID {item['ID']} já existe")
+            raise DropItem(f"Produto com ID {item['id']} já existe")
 
             # Converta o preço para um valor numérico (float)
-        preco = item['Preço'].replace(',', '.')  # Substitua ',' por '.'
+        preco = item['preco'].replace(',', '.')  # Substitua ',' por '.'
         try:
             preco_valor = float(preco)
         except ValueError:
-            raise DropItem(f"Preço inválido: {item['Preço']}")
+            raise DropItem(f"Preço inválido: {item['preco']}")
             
             # Insira o novo produto
         self.cursor.execute('''
@@ -54,5 +54,5 @@ class DatabasePipeline:
         return item
         
 ITEM_PIPELINES = {
-    'your_project_name.pipelines.DatabasePipeline': 1,
+    'kabum.pipelines.DatabasePipeline': 1,
 }
