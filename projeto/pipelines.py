@@ -1,58 +1,38 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import os
+import csv
 
+class CsvPipeline:
+    def __init__(self):
+        self.file_path = 'output/produtos.csv'
+        self.id_counter = 1
 
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
-import sqlite3
-from scrapy.exceptions import DropItem
+        # Verifica se o diretório output existe, se não, cria
+        if not os.path.exists('output'):
+            os.makedirs('output')
 
-class DatabasePipeline:
+        # Abre o arquivo em modo append
+        self.file = open(self.file_path, 'a', newline='', encoding='utf-8')
+        self.writer = csv.writer(self.file)
 
-    def open_spider(self, spider):
-            self.conn = sqlite3.connect('produtos.db')
-            self.cursor = self.conn.cursor()
-            # Crie a tabela se não existir
-            self.cursor.execute('''
-                CREATE TABLE IF NOT EXISTS produtos (
-                    id TEXT PRIMARY KEY,
-                    titulo TEXT,
-                    link TEXT,
-                    preco REAL,  # Mude o tipo para REAL
-                    imagem_url TEXT
-                )
-            ''')
-            self.conn.commit()
+        # Verifica se o arquivo já existe e não está vazio
+        if os.path.getsize(self.file_path) == 0:  # Verifica se o arquivo está vazio
+            self.writer.writerow(['id', 'titulo', 'link', 'preco', 'img'])  # Escreve o cabeçalho
+        else:
+            # Lê o último ID do arquivo para continuar a contagem
+            self.id_counter = self.get_last_id()
 
-    def close_spider(self, spider):
-        self.conn.close()
+    def get_last_id(self):
+        with open(self.file_path, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            last_row = list(reader)[-1]  # Lê a última linha do arquivo
+            return int(last_row[0]) + 1  # Retorna o próximo ID
 
     def process_item(self, item, spider):
-        # Verifique se o ID já existe
-        self.cursor.execute('SELECT id FROM produtos WHERE id = ?', (item['id'],))
-        result = self.cursor.fetchone()
-
-        if result:
-                # Se o ID já existir, não faça nada
-            raise DropItem(f"Produto com ID {item['id']} já existe")
-
-            # Converta o preço para um valor numérico (float)
-        preco = item['preco'].replace(',', '.')  # Substitua ',' por '.'
-        try:
-            preco_valor = float(preco)
-        except ValueError:
-            raise DropItem(f"Preço inválido: {item['preco']}")
-            
-            # Insira o novo produto
-        self.cursor.execute('''
-            INSERT INTO produtos (id, titulo, link, preco, imagem_url)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (item['id'], item['titulo'], item['link'], preco_valor, item['img']))
-        self.conn.commit()
+        item['id'] = self.id_counter  # Atribui o ID ao item
+        self.writer.writerow([item['id'], item['titulo'], item['link'], item['preco'], item['img']])
+        self.id_counter += 1  # Incrementa o contador do ID
         return item
-        
-ITEM_PIPELINES = {
-    'kabum.pipelines.DatabasePipeline': 1,
-}
+
+    def close_spider(self, spider):
+        # Fecha o arquivo quando o spider é fechado
+        self.file.close()

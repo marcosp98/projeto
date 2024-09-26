@@ -23,9 +23,16 @@ ROBOTSTXT_OBEY = True
 FEEDS = {
     'output/produtos.csv': {
         'format': 'csv',
-        'overwrite': True,
-    },
+        'encoding': 'utf8',
+        'fields': ['id', 'titulo', 'link', 'preco', 'img'],
+        'overwrite': False,  
+    }
 }
+
+ITEM_PIPELINES = {
+    'projeto.pipelines.CsvPipeline': 1,  # Use o caminho correto do seu pipeline
+}
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
