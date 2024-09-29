@@ -35,11 +35,7 @@ class KabumSpider(scrapy.Spider):
 
         if next_page:
             next_page_url = response.urljoin(next_page)  # Garante que a URL seja absoluta
-            print(f"Próxima página encontrada: {next_page_url}")  # Adiciona um print para verificar o URL
             yield scrapy.Request(url=next_page_url, callback=self.parse, dont_filter=True)
-        else:
-            print("Não há mais páginas para navegar.")  # Caso não haja próxima página
-  
             # print(f"Link: {link}")
             # print(f"Preço: R$ {preco}")
             # print(f"Imagem URL: {imagem_url}")
