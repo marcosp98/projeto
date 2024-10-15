@@ -18,11 +18,11 @@ FEEDS = {
 }
 
 ITEM_PIPELINES = {
-    'projeto.pipelines.CsvPipeline': 1,  
-}
+    'projeto.pipelines.CsvPipeline': 300,  
+}#SQLServerPipeline
 
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
-DOWNLOAD_DELAY = 2  # Atraso de 2 segundos entre cada request
+DOWNLOAD_DELAY = 0  # Atraso de 2 segundos entre cada request

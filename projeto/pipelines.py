@@ -36,3 +36,47 @@ class CsvPipeline:
 
     def close_spider(self, spider):
         self.file.close()
+# import pyodbc
+# from scrapy.exceptions import DropItem
+
+# class SQLServerPipeline:
+
+#     def open_spider(self, spider):
+#         # Configura a conexão com o banco de dados SQL Server
+#         self.conn = pyodbc.connect(
+#             'DRIVER={ODBC Driver 17 for SQL Server};'
+#             'SERVER=192.168.0.100,1433;'
+#             'DATABASE=ProjetoSCLPM;'
+#             'UID=admin;'
+#             'PWD=projetof@tec2024'
+#         )
+#         self.cursor = self.conn.cursor()
+        
+#         # Crie a tabela se ela não existir
+#         self.cursor.execute('''
+#             IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='produtos' AND xtype='U')
+#             CREATE TABLE produtos (
+#                 id INT IDENTITY(1,1) PRIMARY KEY,
+#                 titulo NVARCHAR(255),
+#                 link NVARCHAR(MAX),
+#                 preco NVARCHAR(50),
+#                 img NVARCHAR(MAX),
+#                 nota NVARCHAR(10),
+#                 qtd_aval NVARCHAR(10)
+#             )
+#         ''')
+#         self.conn.commit()
+
+#     def close_spider(self, spider):
+#         self.conn.close()
+
+#     def process_item(self, item, spider):
+#         # Inserir os dados no banco de dados
+#         self.cursor.execute('''
+#             INSERT INTO produtos (titulo, link, preco, img, nota, qtd_aval)
+#             VALUES (?, ?, ?, ?, ?, ?)
+#         ''', 
+#         (item['titulo'], item['link'], item['preco'], item['img'], item['nota'], item['qtd_aval']))
+        
+#         self.conn.commit()
+#         return item
