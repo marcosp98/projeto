@@ -13,13 +13,13 @@ FEEDS = {
         'format': 'csv',
         'encoding': 'utf8',
         'fields': ['id', 'titulo', 'link', 'preco', 'img', 'nota', 'qtd_aval', 'site'],
-        'overwrite': False,  
+        'overwrite': True,  
     }
 }
 
 ITEM_PIPELINES = {
-    'projeto.pipelines.CsvPipeline': 300,  
-}#SQLServerPipeline
+    'projeto.pipelines.PostgresPipeline': 300,  
+}#CsvPipeline
 
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
