@@ -7,14 +7,22 @@ data_pesquisa = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 class MLSpider(scrapy.Spider):
     name = 'mercadolivre'
-    allowed_domains = ['mercadolivre.com.br'] #['kabum.com.br']
-    start_urls = ['https://lista.mercadolivre.com.br/'+ desejo]#['https://www.kabum.com.br/hardware/memoria-ram']
+    allowed_domains = ['mercadolivre.com.br']
+    start_urls = ['https://lista.mercadolivre.com.br/' + desejo]
     
+    max_products = 50000  # Limite de produtos
+    current_product_count = 0  # Contador de produtos processados
+
     def parse(self, response):
-        print("[ parse ]")
         produtos = response.css('li.ui-search-layout__item')
         
         for produto in produtos:
+            # Verifique se já atingiu o limite de produtos
+            if self.current_product_count >= self.max_products:
+                self.crawler.engine.close_spider(self, 'Limite de produtos atingido')
+                return
+
+            # Extraia os dados do produto
             titulo = produto.css('h2.poly-component__title a::text').get()
             link = produto.css('h2.poly-component__title a::attr(href)').get()
             reais = produto.css('.andes-money-amount__fraction::text').get()
@@ -33,12 +41,12 @@ class MLSpider(scrapy.Spider):
                 'data_pesquisa': data_pesquisa,
                 'qtd_aval': quantidade_opinioes
             }
+
+            self.current_product_count += 1  # Incrementa o contador após processar um produto
             
-            
+        # Lógica para seguir para a próxima página
         next_page = response.css('li.andes-pagination__button--next a::attr(href)').get()
-
         if next_page:
-            next_page_url = response.urljoin(next_page)  # Garante que a URL seja absoluta
+            next_page_url = response.urljoin(next_page)
             yield scrapy.Request(url=next_page_url, callback=self.parse, dont_filter=True)
-
 
