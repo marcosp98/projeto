@@ -1,6 +1,9 @@
 import scrapy
+from datetime import datetime
+
 
 desejo = input("O que você deseja?")
+data_pesquisa = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 class MLSpider(scrapy.Spider):
     name = 'mercadolivre'
@@ -27,6 +30,7 @@ class MLSpider(scrapy.Spider):
                 'preco': preco,
                 'img': imagem_url,
                 'nota': nota_avaliacao,
+                'data_pesquisa': data_pesquisa,
                 'qtd_aval': quantidade_opinioes
             }
             

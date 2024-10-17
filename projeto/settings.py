@@ -12,8 +12,8 @@ FEEDS = {
     'output/produtos.csv': {
         'format': 'csv',
         'encoding': 'utf8',
-        'fields': ['id', 'titulo', 'link', 'preco', 'img', 'nota', 'qtd_aval', 'site'],
-        'overwrite': True,  
+        'fields': ['id', 'titulo', 'link', 'preco', 'img', 'nota', 'qtd_aval', 'data_pesquisa'],
+        'overwrite': False,  
     }
 }
 
